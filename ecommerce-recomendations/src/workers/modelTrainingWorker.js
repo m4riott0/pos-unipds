@@ -14,17 +14,17 @@ const WHEIGHT = {
 
 const normalize = (value, min, max) => (value - min) / ((max - min) || 1);
 
-function makeContext(users, catalog) {
+function makeContext(users, products) {
     const ages = users.map(u => u.age);
-    const prices = catalog.map(p => p.price);
+    const prices = products.map(p => p.price);
 
     const minAge = Math.min(...ages);
     const maxAge = Math.max(...ages);
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
 
-    const colors = [...new Set(catalog.map(p => p.color))];
-    const categories = [...new Set(catalog.map(p => p.category))];
+    const colors = [...new Set(products.map(p => p.color))];
+    const categories = [...new Set(products.map(p => p.category))];
 
     const colorsIndex = Object.fromEntries(
         colors.map((color, index) => [color, index])
@@ -46,7 +46,7 @@ function makeContext(users, catalog) {
     });
 
     const productAvgAgeNorm = Object.fromEntries(
-        catalog.map(product => {
+        products.map(product => {
             const avg = ageCounts[product.name] ?
                 ageSums[product.name] / ageCounts[product.name] :
                 midAge
@@ -55,7 +55,7 @@ function makeContext(users, catalog) {
     )
 
     return {
-        catalog,
+        products,
         users,
         colorsIndex,
         categoriesIndex,
@@ -81,16 +81,60 @@ function encodeProduct(product, context) {
     return tf.concat1d([price, age, category, color]);
 }
 
+function encodeUser(user, context) {
+    if (user.purchases.length) {
+        return tf.stack(
+            user.purchases.map(product =>
+                encodeProduct(product, context)
+            )
+        )
+            .mean(0)
+            .reshape([
+                1,
+                context.dimensions
+            ]);
+    }
+}
+
+function createTrainingData(context) {
+    const inputs = []
+    const labels = []
+    context.users.forEach(user => {
+        const userVector = encodeUser(user, context).dataSync()
+        context.products.forEach(product => {
+            const productVector = encodeProduct(product, context).
+                dataSync()
+
+            const label = user.purchases.some(
+                purchase => purchase.name === product.name ?
+                    1 :
+                    0
+            )
+
+
+            inputs.push([...userVector, ...productVector])
+            labels.push(label)
+        })
+    })
+    
+    return {
+        inputs: tf.tensor2d(inputs),
+        labels: tf.tensor2d(labels, [labels.length, 1]),
+        inputdimensions: context.dimensions * 2
+    }
+
+}
+
 
 async function trainModel({ users }) {
     console.log('Training model with users:', users)
 
     postMessage({ type: workerEvents.progressUpdate, progress: { progress: 50 } });
 
-    const catalog = await (await fetch('/data/products.json')).json();
+    const products = await (await fetch('/data/products.json')).json();
 
-    const context = makeContext(users, catalog);
-    context.productVectors = catalog.map(product => {
+    const context = makeContext(users, products);
+    context.productVectors = products.map(product => {
         return {
             name: product.name,
             meta: { ...product },
@@ -98,7 +142,12 @@ async function trainModel({ users }) {
         }
     });
 
+
+    // ideal que estivesse em um banco de dados real, mas para fins de demonstração, estou mantendo em memória
     _globalCtx = context;
+
+    const trainData = createTrainingData(context);
+
     postMessage({
         type: workerEvents.trainingLog,
         epoch: 1,
