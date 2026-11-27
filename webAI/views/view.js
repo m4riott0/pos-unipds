@@ -17,7 +17,8 @@ export class View {
     }
 
     setYear() {
-        this.elements.year.textContent = new Date().getFullYear();
+        const year = this.elements.year;
+        if (year) year.textContent = new Date().getFullYear();
     }
 
     getQuestionText() {
