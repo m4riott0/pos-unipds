@@ -65,11 +65,11 @@ Acesse `chrome://flags`, ative as opções abaixo e reinicie o navegador:
 > 💡 Para conferir se o modelo já foi baixado, acesse `chrome://on-device-internals`.
 
 
-Abra o endereço exibido no terminal (por exemplo, `http://localhost:8080`) no Chrome.
+Abra o endereço exibido no terminal (por exemplo, `http://localhost:3000`) no Chrome.
 
 > Na primeira execução, o Chrome pode precisar baixar o modelo. O progresso aparece no console do DevTools.
 
-**Dica:** durante o desenvolvimento, use `npx http-server . -c-1` para desativar o cache e sempre carregar a versão mais recente dos arquivos.
+**Dica:** durante o desenvolvimento, use `npx http-server . -p 3000 -c-1` para desativar o cache e sempre carregar a versão mais recente dos arquivos.
 
 ## ⚙️ Configuração
 
