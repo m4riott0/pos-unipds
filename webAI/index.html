@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web AI Chat</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+        <header class="topbar">
+            <span class="brand"><span class="brand-mark">✦</span> Web AI</span>
+        </header>
+
+        <main id="messages" class="messages">
+            <div id="welcome" class="welcome">
+                <div class="welcome-mark">✦</div>
+                <h1>Como posso ajudar hoje?</h1>
+                <p>Converse com a IA do seu navegador. Você pode anexar uma imagem ou áudio (em inglês).</p>
+            </div>
+        </main>
+
+        <div class="composer-area">
+            <form id="question-form" class="composer">
+                <div id="file-preview" class="file-preview"></div>
+
+                <textarea id="question" name="question" rows="1" placeholder="Envie uma mensagem..."></textarea>
+
+                <div class="composer-actions">
+                    <input type="file" id="file-input" accept="image/*,audio/*" hidden>
+                    <button type="button" class="icon-btn" id="file-upload-btn" title="Anexar imagem ou áudio">
+                        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16.5 6.5v10a4.5 4.5 0 0 1-9 0V5a3 3 0 0 1 6 0v10.5a1.5 1.5 0 0 1-3 0V6.5H9v9a3 3 0 0 0 6 0V5a4.5 4.5 0 0 0-9 0v11.5a6 6 0 0 0 12 0v-10z"/></svg>
+                    </button>
+                    <span id="file-selected-name" class="file-selected-name"></span>
+                    <button type="submit" id="ask-button" class="send-btn" title="Enviar">
+                        <svg class="icon-send" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 4l-7 7 1.4 1.4L11 7.8V20h2V7.8l4.6 4.6L19 11z"/></svg>
+                        <svg class="icon-stop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="./index.js"></script>
+</body>
+
+</html>
